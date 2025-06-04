@@ -19,7 +19,7 @@ public static class SaleTestData
         return new Sale
         {
             SaleNumber = faker.Random.AlphaNumeric(10),
-            Date = DateTime.Today,
+            CreatedAt = DateTime.Now,
             CustomerId = Guid.NewGuid(),
             CustomerName = faker.Person.FullName,
             Branch = faker.Company.CompanyName(),
@@ -41,7 +41,7 @@ public static class SaleTestData
         return new Sale
         {
             SaleNumber = new Faker().Random.AlphaNumeric(10),
-            Date = DateTime.Today,
+            CreatedAt = DateTime.Now,
             CustomerId = Guid.NewGuid(),
             CustomerName = faker.Person.FullName,
             Branch = faker.Company.CompanyName(),
@@ -59,7 +59,7 @@ public static class SaleTestData
     {
         return new SaleItem
         {
-            ProductId = new Faker().Random.Number(1, 1000),
+            ProductId = Guid.NewGuid(),
             ProductName = new Faker().Commerce.ProductName(),
             Quantity = quantity,
             UnitPrice = unitPrice

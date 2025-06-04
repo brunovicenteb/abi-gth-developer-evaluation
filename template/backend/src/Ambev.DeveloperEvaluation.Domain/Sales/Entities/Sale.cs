@@ -9,7 +9,7 @@ public class Sale : BaseEntity
     public const string EMPTY_SALE_ITEMS = "Uma venda deve conter ao menos um item.";
 
     public string SaleNumber { get; set; } = string.Empty;
-    public DateTime Date { get; set; }
+    public DateTime CreatedAt { get; set; }
     public Guid CustomerId { get; set; }
     public string CustomerName { get; set; } = string.Empty;
     public string Branch { get; set; } = string.Empty;

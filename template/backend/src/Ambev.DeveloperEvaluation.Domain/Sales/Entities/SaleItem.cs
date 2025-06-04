@@ -1,6 +1,8 @@
-﻿namespace Ambev.DeveloperEvaluation.Domain.Sales.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Common;
 
-public class SaleItem
+namespace Ambev.DeveloperEvaluation.Domain.Sales.Entities;
+
+public class SaleItem : BaseEntity
 {
     public const int DISCOUNT_TIER1_MIN = 4;
     public const int DISCOUNT_TIER2_MIN = 10;
@@ -8,12 +10,14 @@ public class SaleItem
     public const decimal DISCOUNT_TIER1_RATE = 0.10m;
     public const decimal DISCOUNT_TIER2_RATE = 0.20m;
 
-    public int ProductId { get; set; }
+    public Guid SaleId { get; set; }
+    public Guid ProductId { get; set; }
     public string ProductName { get; set; } = string.Empty;
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
     public decimal Discount { get; private set; }
     public decimal Total { get; private set; }
+    public Sale Sale { get; set; }
 
     private void ApplyDiscount()
     {
