@@ -14,7 +14,7 @@ namespace Ambev.DeveloperEvaluation.WebApi;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         try
         {
@@ -61,6 +61,8 @@ public class Program
                 app.UseSwaggerUI();
             }
 
+            await DefaultContext.MigrateAsync(app);
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
@@ -70,7 +72,7 @@ public class Program
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
         catch (Exception ex)
         {
