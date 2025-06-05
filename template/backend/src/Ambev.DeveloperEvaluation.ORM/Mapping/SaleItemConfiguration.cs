@@ -8,11 +8,11 @@ public class SaleItemConfiguration : IEntityTypeConfiguration<SaleItem>
 {
     public void Configure(EntityTypeBuilder<SaleItem> builder)
     {
-        builder.ToTable("SaleItems");
+        builder.ToTable("SalesItems");
         builder.HasKey(u => u.Id);
         builder.Property(u => u.Id).HasColumnType("uuid").HasDefaultValueSql("gen_random_uuid()");
         builder.Property(u => u.ProductId).HasColumnType("uuid").IsRequired();
-        builder.AddForeingKey(o => o.Sale, o => o.SaleId, true);
+        builder.Property(u => u.SaleId).HasColumnType("uuid").IsRequired();
         builder.Property(u => u.ProductName).AddDefaultString();
         builder.Property(u => u.Quantity)
             .AddDefaultIntMinValueConstraint(builder, 1);
