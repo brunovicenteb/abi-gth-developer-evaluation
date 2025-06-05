@@ -38,6 +38,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         await Collection.AddAsync(entity);
         if (!applySave)
             return entity;
+        await SaveChangesAsync(cancellationToken);
         return await GetIdAsync(entity.Id, cancellationToken);
     }
 
