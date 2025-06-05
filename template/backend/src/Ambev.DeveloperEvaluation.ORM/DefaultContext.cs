@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.customers.Entities;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -13,6 +14,8 @@ public class DefaultContext : DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Customer> Customers { get; set; }
+    public DbSet<Sale> Sales { get; set; }
+    public DbSet<SaleItem> SalesItems { get; set; }
 
     public DefaultContext(DbContextOptions<DefaultContext> options) : base(options)
     {

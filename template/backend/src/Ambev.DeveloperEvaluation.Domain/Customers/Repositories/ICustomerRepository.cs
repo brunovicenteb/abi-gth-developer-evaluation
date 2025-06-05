@@ -1,12 +1,8 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.customers.Entities;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 
 namespace Ambev.DeveloperEvaluation.Domain.customers.Repositories;
 
-public interface ICustomerRepository
+public interface ICustomerRepository : IBaseRepository<Customer>
 {
-    Task<Customer> GetByIdAsync(int id);
-    Task<IEnumerable<Customer>> GetAllAsync();
-    Task AddAsync(Customer customer);
-    Task UpdateAsync(Customer customer);
-    Task DeleteAsync(int id);
 }
