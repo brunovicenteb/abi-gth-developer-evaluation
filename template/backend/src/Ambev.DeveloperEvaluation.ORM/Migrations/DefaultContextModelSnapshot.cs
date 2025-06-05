@@ -139,9 +139,6 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.Property<Guid>("SaleId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("SaleId1")
-                        .HasColumnType("uuid");
-
                     b.Property<decimal>("Total")
                         .ValueGeneratedOnAdd()
                         .HasPrecision(12, 2)
@@ -158,9 +155,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
 
                     b.HasIndex("SaleId");
 
-                    b.HasIndex("SaleId1");
-
-                    b.ToTable("SaleItems", null, t =>
+                    b.ToTable("SalesItems", null, t =>
                         {
                             t.HasCheckConstraint("CHK_Discount_Min_Value", "(\"Discount\" >= 0)");
 
@@ -197,14 +192,10 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
             modelBuilder.Entity("Ambev.DeveloperEvaluation.Domain.Sales.Entities.SaleItem", b =>
                 {
                     b.HasOne("Ambev.DeveloperEvaluation.Domain.Sales.Entities.Sale", "Sale")
-                        .WithMany()
-                        .HasForeignKey("SaleId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Ambev.DeveloperEvaluation.Domain.Sales.Entities.Sale", null)
                         .WithMany("Items")
-                        .HasForeignKey("SaleId1");
+                        .HasForeignKey("SaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Sale");
                 });
