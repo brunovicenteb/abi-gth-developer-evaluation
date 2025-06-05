@@ -24,7 +24,7 @@ public class DeleteSaleHandler : IRequestHandler<DeleteSaleCommand, DeleteSaleRe
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var sale = await _saleRepository.GetIdAsync(request.Id, cancellationToken);
+        var sale = await _saleRepository.GetByIdAsync(request.Id, cancellationToken);
         if (sale is null)
             throw new KeyNotFoundException($"Venda com ID {request.Id} não encontrada.");
 
