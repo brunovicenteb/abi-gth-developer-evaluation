@@ -1,6 +1,6 @@
-﻿namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
+﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 
-public class GetSaleResult
+public class GetSaleResponse
 {
     public Guid Id { get; set; }
     public string SaleNumber { get; set; } = string.Empty;
@@ -9,10 +9,10 @@ public class GetSaleResult
     public string CustomerName { get; set; } = string.Empty;
     public string Branch { get; set; } = string.Empty;
     public decimal TotalAmount { get; set; }
-    public List<GetSaleItemResult> Items { get; set; } = new();
+    public List<GetSaleItemResponse> Items { get; set; } = [];
 }
 
-public class GetSaleItemResult
+public class GetSaleItemResponse
 {
     public Guid ProductId { get; set; }
     public string ProductName { get; set; } = string.Empty;
