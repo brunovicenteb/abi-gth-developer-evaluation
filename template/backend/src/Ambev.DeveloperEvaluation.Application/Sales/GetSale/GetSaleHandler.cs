@@ -1,24 +1,24 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 
-namespace Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
+namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 
-/// <summary>
-/// Handler for deleting a sale.
-/// </summary>
-public class DeleteSaleHandler : IRequestHandler<DeleteSaleCommand, DeleteSaleResponse>
+public class GetSaleHandler : IRequestHandler<GetSaleQuery, GetSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
+    private readonly IMapper _mapper;
 
-    public DeleteSaleHandler(ISaleRepository saleRepository)
+    public GetSaleHandler(ISaleRepository saleRepository, IMapper mapper)
     {
         _saleRepository = saleRepository;
+        _mapper = mapper;
     }
 
-    public async Task<DeleteSaleResponse> Handle(DeleteSaleCommand request, CancellationToken cancellationToken)
+    public async Task<GetSaleResult> Handle(GetSaleQuery request, CancellationToken cancellationToken)
     {
-        var validator = new DeleteSaleValidator();
+        var validator = new GetSaleValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
@@ -28,8 +28,6 @@ public class DeleteSaleHandler : IRequestHandler<DeleteSaleCommand, DeleteSaleRe
         if (sale is null)
             throw new KeyNotFoundException($"Venda com ID {request.Id} não encontrada.");
 
-        await _saleRepository.DeleteAsync(request.Id, cancellationToken);
-
-        return new DeleteSaleResponse { Success = true };
+        return _mapper.Map<GetSaleResult>(sale);
     }
 }
