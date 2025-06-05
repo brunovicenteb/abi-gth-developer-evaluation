@@ -7,6 +7,9 @@ public class Sale : BaseEntity
     public const string MAX_ITEM_LIMIT_EXCEEDED = "Não é permitido vender mais de 20 unidades do mesmo item.";
     public const string INVALID_DISCOUNT_RULE = "Desconto aplicado inválido para a quantidade informada.";
     public const string EMPTY_SALE_ITEMS = "Uma venda deve conter ao menos um item.";
+    public const string INVALID_SALE_NUMBER = "O número da venda é obrigatório.";
+    public const string INVALID_CUSTOMER_NAME = "O nome do cliente é obrigatório.";
+    public const string INVALID_BRANCH = "O nome da filial é obrigatório.";
 
     public string SaleNumber { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
