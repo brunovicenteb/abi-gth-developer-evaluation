@@ -11,14 +11,6 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Customer",
-                table: "Customer");
-
-            migrationBuilder.RenameTable(
-                name: "Customer",
-                newName: "Customers");
-
             migrationBuilder.AlterColumn<string>(
                 name: "Phone",
                 table: "Users",
@@ -29,10 +21,31 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                 oldType: "character varying(20)",
                 oldMaxLength: 20);
 
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_Customers",
-                table: "Customers",
-                column: "Id");
+            migrationBuilder.AddColumn<DateTime>(
+                name: "CreatedAt",
+                table: "Users",
+                type: "timestamp with time zone",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "UpdatedAt",
+                table: "Users",
+                type: "timestamp with time zone",
+                nullable: true);
+
+            migrationBuilder.CreateTable(
+                name: "Customers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Document = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customers", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Sales",
@@ -54,7 +67,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SaleItems",
+                name: "SalesItems",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
@@ -64,55 +77,48 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false, defaultValue: 0m),
                     Discount = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false, defaultValue: 0m),
-                    Total = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false, defaultValue: 0m),
-                    SaleId1 = table.Column<Guid>(type: "uuid", nullable: true)
+                    Total = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false, defaultValue: 0m)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SaleItems", x => x.Id);
+                    table.PrimaryKey("PK_SalesItems", x => x.Id);
                     table.CheckConstraint("CHK_Discount_Min_Value", "(\"Discount\" >= 0)");
                     table.CheckConstraint("CHK_Quantity_Min_Value", "(\"Quantity\" >= 1)");
                     table.CheckConstraint("CHK_Total_Min_Value", "(\"Total\" >= 0)");
                     table.CheckConstraint("CHK_UnitPrice_Min_Value", "(\"UnitPrice\" >= 0)");
                     table.ForeignKey(
-                        name: "FK_SaleItems_Sales_SaleId",
+                        name: "FK_SalesItems_Sales_SaleId",
                         column: x => x.SaleId,
                         principalTable: "Sales",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_SaleItems_Sales_SaleId1",
-                        column: x => x.SaleId1,
-                        principalTable: "Sales",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_SaleItems_SaleId",
-                table: "SaleItems",
+                name: "IX_SalesItems_SaleId",
+                table: "SalesItems",
                 column: "SaleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SaleItems_SaleId1",
-                table: "SaleItems",
-                column: "SaleId1");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "SaleItems");
+                name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "SalesItems");
 
             migrationBuilder.DropTable(
                 name: "Sales");
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Customers",
-                table: "Customers");
+            migrationBuilder.DropColumn(
+                name: "CreatedAt",
+                table: "Users");
 
-            migrationBuilder.RenameTable(
-                name: "Customers",
-                newName: "Customer");
+            migrationBuilder.DropColumn(
+                name: "UpdatedAt",
+                table: "Users");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Phone",
@@ -125,11 +131,6 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                 oldType: "character varying(20)",
                 oldMaxLength: 20,
                 oldNullable: true);
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_Customer",
-                table: "Customer",
-                column: "Id");
         }
     }
 }
