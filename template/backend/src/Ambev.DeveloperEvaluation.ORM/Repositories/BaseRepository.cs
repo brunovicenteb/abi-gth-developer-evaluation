@@ -26,7 +26,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         return await Context.SaveChangesAsync(cancellationToken) == 1;
     }
 
-    public async Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public virtual async Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await Collection
             .AsNoTracking()

@@ -5,4 +5,5 @@ namespace Ambev.DeveloperEvaluation.Domain.customers.Repositories;
 
 public interface ISaleRepository : IBaseRepository<Sale>
 {
+    Task<Sale> GetBySalesItemIdAsync(Guid id, CancellationToken cancellationToken);
 }

@@ -1,4 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
+using MediatR;
+using System.Threading;
 
 namespace Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 
@@ -16,9 +19,19 @@ public class Sale : BaseEntity
     public Guid CustomerId { get; set; }
     public string CustomerName { get; set; } = string.Empty;
     public string Branch { get; set; } = string.Empty;
-    public List<SaleItem> Items { get; set; } = [];
     public decimal TotalAmount { get; private set; }
     public bool IsCancelled { get; private set; }
+    public List<SaleItem> Items { get; set; } = [];
+
+    public void CancelItemById(Guid saleItemId)
+    {
+        var item = Items.FirstOrDefault(i => i.Id == saleItemId);
+        if (item == null)
+            throw new InvalidOperationException($"Item com ID {saleItemId} não encontrado.");
+
+        item.Cancel();
+        CalculateTotal();
+    }
 
     public void CalculateTotal()
     {
