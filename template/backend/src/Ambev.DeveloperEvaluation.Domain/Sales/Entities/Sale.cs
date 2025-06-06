@@ -1,7 +1,4 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
-using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
-using MediatR;
-using System.Threading;
 
 namespace Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 
@@ -40,7 +37,8 @@ public class Sale : BaseEntity
         foreach (var item in Items.Where(o => !o.IsCancelled))
             item.CalculateTotal();
 
-        TotalAmount = Items.Where(o => !o.IsCancelled).Sum(i => i.Total);
+        var amount = Items.Where(o => !o.IsCancelled).Sum(i => i.Total);
+        TotalAmount = DefaultRound(amount);
     }
 
     public void Cancel()
