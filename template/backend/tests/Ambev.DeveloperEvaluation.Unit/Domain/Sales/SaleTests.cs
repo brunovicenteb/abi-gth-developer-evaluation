@@ -127,4 +127,56 @@ public class SaleTests
         // Assert
         Assert.Equal(0, item.Discount);
     }
+
+    [Fact(DisplayName = "SaleItem should be marked as cancelled and total updated")]
+    public void Given_SaleItem_When_CancelItemById_Then_ItemShouldBeCancelledAndTotalUpdated()
+    {
+        // Arrange
+        var sale = SaleTestData.GenerateValidSale();
+        var itemToCancel = sale.Items.First();
+        var itemTotalBeforeCancel = itemToCancel.Total;
+        var totalBeforeCancel = sale.TotalAmount;
+
+        // Act
+        sale.CancelItemById(itemToCancel.Id);
+
+        // Assert
+        Assert.True(itemToCancel.IsCancelled);
+        Assert.Equal(0, itemToCancel.Quantity);
+        Assert.Equal(0, itemToCancel.Total);
+        Assert.Equal(0, itemToCancel.Discount);
+
+        var expectedTotal = sale.Items.Sum(i => i.Total);
+        Assert.Equal(expectedTotal, sale.TotalAmount);
+        Assert.Equal(totalBeforeCancel - itemTotalBeforeCancel, sale.TotalAmount);
+    }
+
+    [Fact(DisplayName = "CancelItemById should throw when item does not exist")]
+    public void Given_InvalidItemId_When_CancelItemById_Then_ShouldThrow()
+    {
+        // Arrange
+        var sale = SaleTestData.GenerateValidSale();
+        var invalidItemId = Guid.NewGuid();
+
+        // Act
+        var ex = Assert.Throws<InvalidOperationException>(() => sale.CancelItemById(invalidItemId));
+
+        // Assert
+        Assert.Equal($"Item com ID {invalidItemId} não encontrado.", ex.Message);
+    }
+
+    [Fact(DisplayName = "CancelItemById should throw if item already cancelled")]
+    public void Given_AlreadyCancelledItem_When_CancelItemById_Then_ShouldThrow()
+    {
+        // Arrange
+        var sale = SaleTestData.GenerateValidSale();
+        var item = sale.Items.First();
+
+        // Act
+        sale.CancelItemById(item.Id);
+        var ex = Assert.Throws<InvalidOperationException>(() => sale.CancelItemById(item.Id));
+
+        // Assert
+        Assert.Equal("Este item já foi cancelado.", ex.Message);
+    }
 }

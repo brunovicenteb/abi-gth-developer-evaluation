@@ -12,4 +12,18 @@ public class SalesRepository : BaseRepository<DefaultContext, Sale>, ISaleReposi
     }
 
     protected override DbSet<Sale> Collection => Context.Sales;
+
+    public override async Task<Sale> GetByIdAsync(Guid id, bool trackedItem, CancellationToken cancellationToken)
+    {
+        if (trackedItem)
+            return await Collection
+                .Where(sale => !sale.IsCancelled && sale.Id == id)
+                .Include(sale => sale.Items.Where(item => !item.IsCancelled))
+                .FirstOrDefaultAsync(cancellationToken);
+        return await Collection
+            .Where(sale => !sale.IsCancelled && sale.Id == id)
+            .Include(sale => sale.Items.Where(item => !item.IsCancelled))
+            .AsNoTracking()
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }

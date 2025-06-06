@@ -17,7 +17,7 @@ public class SaleItem : BaseEntity
     public decimal UnitPrice { get; set; }
     public decimal Discount { get; private set; }
     public decimal Total { get; private set; }
-    public Sale Sale { get; set; }
+    public bool IsCancelled { get; private set; }
 
     private void ApplyDiscount()
     {
@@ -29,6 +29,13 @@ public class SaleItem : BaseEntity
             Discount = DISCOUNT_TIER2_RATE;
         else
             throw new InvalidOperationException(Sale.MAX_ITEM_LIMIT_EXCEEDED);
+    }
+
+    public void Cancel()
+    {
+        if (IsCancelled)
+            throw new InvalidOperationException("Este item já foi cancelado.");
+        IsCancelled = true;
     }
 
     internal void CalculateTotal()
