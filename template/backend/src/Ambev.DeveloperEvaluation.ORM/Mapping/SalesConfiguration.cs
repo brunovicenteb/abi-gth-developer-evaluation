@@ -14,6 +14,7 @@ public class SalesConfiguration : IEntityTypeConfiguration<Sale>
         builder.Property(u => u.CustomerId).HasColumnType("uuid").IsRequired();
         builder.Property(u => u.CreatedAt).AddDefaultDateTime();
         builder.Property(u => u.SaleNumber).AddDefaultString();
+        builder.Property(u => u.Branch).AddDefaultString();
         builder.Property(u => u.CustomerName).AddDefaultString();
         builder.Property(u => u.TotalAmount)
             .AddDefaultDecimal()
