@@ -127,4 +127,53 @@ public class SaleTests
         // Assert
         Assert.Equal(0, item.Discount);
     }
+
+    [Fact(DisplayName = "SaleItem should be marked as cancelled and total updated")]
+    public void Given_SaleItem_When_CancelItemById_Then_ItemShouldBeCancelledAndTotalUpdated()
+    {
+        // Arrange
+        var sale = SaleTestData.GenerateValidSale();
+        var itemToCancel = sale.Items.First();
+        var itemTotalBeforeCancel = itemToCancel.Total;
+        var totalBeforeCancel = sale.TotalAmount;
+
+        // Act
+        sale.CancelItemById(itemToCancel.ProductId);
+
+        // Assert
+        Assert.True(itemToCancel.IsCancelled);
+
+        var expectedTotal = sale.Items.Where(o => !o.IsCancelled).Sum(i => i.Total);
+        Assert.Equal(expectedTotal, sale.TotalAmount);
+        Assert.Equal(totalBeforeCancel - itemTotalBeforeCancel, sale.TotalAmount);
+    }
+
+    [Fact(DisplayName = "CancelItemById should throw when item does not exist")]
+    public void Given_InvalidItemId_When_CancelItemById_Then_ShouldThrow()
+    {
+        // Arrange
+        var sale = SaleTestData.GenerateValidSale();
+        var invalidItemId = Guid.NewGuid();
+
+        // Act
+        var ex = Assert.Throws<InvalidOperationException>(() => sale.CancelItemById(invalidItemId));
+
+        // Assert
+        Assert.Equal($"Item com ProductID {invalidItemId} não encontrado.", ex.Message);
+    }
+
+    [Fact(DisplayName = "CancelItemById should throw if item already cancelled")]
+    public void Given_AlreadyCancelledItem_When_CancelItemById_Then_ShouldThrow()
+    {
+        // Arrange
+        var sale = SaleTestData.GenerateValidSale();
+        var item = sale.Items.First();
+
+        // Act
+        sale.CancelItemById(item.ProductId);
+        var ex = Assert.Throws<InvalidOperationException>(() => sale.CancelItemById(item.ProductId));
+
+        // Assert
+        Assert.Equal("Este item já foi cancelado.", ex.Message);
+    }
 }

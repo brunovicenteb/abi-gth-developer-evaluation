@@ -1,13 +1,13 @@
 ﻿using FluentValidation;
 
-namespace Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
+namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 
 /// <summary>
 /// Validator for DeleteSaleCommand.
 /// </summary>
-public class DeleteSaleValidator : AbstractValidator<DeleteSaleCommand>
+public class CancelSaleValidator : AbstractValidator<CancelSaleCommand>
 {
-    public DeleteSaleValidator()
+    public CancelSaleValidator()
     {
         RuleFor(x => x.Id)
             .NotEmpty()
