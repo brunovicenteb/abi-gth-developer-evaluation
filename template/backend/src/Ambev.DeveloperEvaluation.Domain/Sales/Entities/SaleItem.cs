@@ -18,7 +18,6 @@ public class SaleItem : BaseEntity
     public decimal Discount { get; private set; }
     public decimal Total { get; private set; }
     public bool IsCancelled { get; private set; }
-    public Sale Sale { get; set; }
 
     private void ApplyDiscount()
     {
@@ -37,9 +36,6 @@ public class SaleItem : BaseEntity
         if (IsCancelled)
             throw new InvalidOperationException("Este item já foi cancelado.");
         IsCancelled = true;
-        Quantity = 0;
-        Discount = 0;
-        Total = 0;
     }
 
     internal void CalculateTotal()

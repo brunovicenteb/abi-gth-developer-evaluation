@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSaleItem
+namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSaleItem
 {
-    public class CancelSaleItemValidator : AbstractValidator<CancelSaleItemCommand>
+    public class CancelSaleItemRequestValidator : AbstractValidator<CancelSaleItemRequest>
     {
-        public CancelSaleItemValidator()
+        public CancelSaleItemRequestValidator()
         {
             RuleFor(x => x.SaleId)
                 .NotEmpty().WithMessage("O ID da venda é obrigatório.");

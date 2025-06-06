@@ -23,11 +23,10 @@ public class Sale : BaseEntity
     public bool IsCancelled { get; private set; }
     public List<SaleItem> Items { get; set; } = [];
 
-    public void CancelItemById(Guid saleItemId)
+    public void CancelItemById(Guid productId)
     {
-        var item = Items.FirstOrDefault(i => i.Id == saleItemId);
-        if (item == null)
-            throw new InvalidOperationException($"Item com ID {saleItemId} não encontrado.");
+        var item = Items.FirstOrDefault(i => i.ProductId == productId)
+            ?? throw new InvalidOperationException($"Item com ProductID {productId} não encontrado.");
 
         item.Cancel();
         CalculateTotal();
@@ -38,10 +37,10 @@ public class Sale : BaseEntity
         if (!Items.Any())
             throw new InvalidOperationException(EMPTY_SALE_ITEMS);
 
-        foreach (var item in Items)
+        foreach (var item in Items.Where(o => !o.IsCancelled))
             item.CalculateTotal();
 
-        TotalAmount = Items.Sum(i => i.Total);
+        TotalAmount = Items.Where(o => !o.IsCancelled).Sum(i => i.Total);
     }
 
     public void Cancel()

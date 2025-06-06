@@ -26,8 +26,12 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         return await Context.SaveChangesAsync(cancellationToken) == 1;
     }
 
-    public virtual async Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public virtual async Task<TEntity> GetByIdAsync(Guid id, bool trackedItem, CancellationToken cancellationToken)
     {
+        if (trackedItem)
+            return await Collection
+                .AsNoTracking()
+                .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
         return await Collection
             .AsNoTracking()
             .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
@@ -39,7 +43,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         if (!applySave)
             return entity;
         await SaveChangesAsync(cancellationToken);
-        return await GetByIdAsync(entity.Id, cancellationToken);
+        return await GetByIdAsync(entity.Id, false, cancellationToken);
     }
 
     public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken, bool applySave = true)
@@ -52,7 +56,10 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
             Context.Entry(existingEntity).State = EntityState.Modified;
             Context.Entry(existingEntity).CurrentValues.SetValues(entity);
         }
-        return await GetByIdAsync(entity.Id, cancellationToken);
+        if (!applySave)
+            return entity;
+        await SaveChangesAsync(cancellationToken);
+        return await GetByIdAsync(entity.Id, false, cancellationToken);
     }
 
     public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)

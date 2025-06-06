@@ -16,6 +16,7 @@ public static class ConfigExtensions
 
     public static PropertyBuilder<TProperty> AddDefaultDateTime<TProperty>(this PropertyBuilder<TProperty> propertyBuilder, bool isRequired = true)
         => propertyBuilder.HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .IsRequired(isRequired);
 
     public static PropertyBuilder<TProperty> AddDefaultString<TProperty>(this PropertyBuilder<TProperty> propertyBuilder,

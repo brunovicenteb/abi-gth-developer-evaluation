@@ -24,7 +24,7 @@ public class GetSaleHandler : IRequestHandler<GetSaleQuery, GetSaleResult>
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var sale = await _saleRepository.GetByIdAsync(request.Id, cancellationToken);
+        var sale = await _saleRepository.GetByIdAsync(request.Id, false, cancellationToken);
         if (sale is null)
             throw new KeyNotFoundException($"Venda com ID {request.Id} não encontrada.");
 

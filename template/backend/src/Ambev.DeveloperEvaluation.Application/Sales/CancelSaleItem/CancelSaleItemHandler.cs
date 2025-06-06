@@ -21,10 +21,10 @@ public class CancelSaleItemHandler : IRequestHandler<CancelSaleItemCommand, Canc
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var sale = await _saleRepository.GetBySalesItemIdAsync(request.SaleItemId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Item de venda com ID {request.SaleItemId} não encontrada.");
+        var sale = await _saleRepository.GetByIdAsync(request.SaleId, true, cancellationToken)
+            ?? throw new KeyNotFoundException($"Venda com ID {request.SaleId} não encontrada.");
 
-        sale.CancelItemById(request.SaleItemId);
+        sale.CancelItemById(request.ProductId);
 
         await _saleRepository.UpdateAsync(sale, cancellationToken);
 
