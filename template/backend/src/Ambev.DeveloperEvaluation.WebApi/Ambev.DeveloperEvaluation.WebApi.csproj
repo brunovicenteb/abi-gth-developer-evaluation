@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>3c58d567-b1d8-4a51-bd36-dbfddb84701b</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -23,10 +22,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Ambev.DeveloperEvaluation.IoC\Ambev.DeveloperEvaluation.IoC.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\Users\GetUser\" />
-    <Folder Include="Features\Users\DeleteUser\" />
-  </ItemGroup>
-
 </Project>

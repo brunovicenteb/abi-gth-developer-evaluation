@@ -1,7 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Common;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Linq.Expressions;
 
 namespace Ambev.DeveloperEvaluation.ORM.Mapping;
 
@@ -16,6 +14,7 @@ public static class ConfigExtensions
 
     public static PropertyBuilder<TProperty> AddDefaultDateTime<TProperty>(this PropertyBuilder<TProperty> propertyBuilder, bool isRequired = true)
         => propertyBuilder.HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .IsRequired(isRequired);
 
     public static PropertyBuilder<TProperty> AddDefaultString<TProperty>(this PropertyBuilder<TProperty> propertyBuilder,
@@ -53,20 +52,5 @@ public static class ConfigExtensions
         var constraintImplementation = $"(\"{fieldName}\" >= {minValue})";
         builder.ToTable(o => o.HasCheckConstraint(constraintName, constraintImplementation));
         return propertyBuilder;
-    }
-
-    public static ReferenceCollectionBuilder<TRelatedEntity, TEntity> AddForeingKey<TEntity, TRelatedEntity>(
-        this EntityTypeBuilder<TEntity> entity,
-        Expression<Func<TEntity, TRelatedEntity>> navigationExpression,
-        Expression<Func<TEntity, object>> foreignKeyExpression,
-        bool isRequired = true)
-        where TEntity : BaseEntity
-        where TRelatedEntity : class
-    {
-        return entity.HasOne(navigationExpression)
-             .WithMany()
-             .HasForeignKey(foreignKeyExpression)
-             .OnDelete(DeleteBehavior.NoAction)
-             .IsRequired(isRequired);
     }
 }

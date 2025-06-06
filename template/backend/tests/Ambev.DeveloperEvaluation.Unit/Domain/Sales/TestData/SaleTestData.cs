@@ -16,7 +16,7 @@ public static class SaleTestData
     public static Sale GenerateValidSale()
     {
         var faker = new Faker();
-        return new Sale
+        var sale = new Sale
         {
             SaleNumber = faker.Random.AlphaNumeric(10),
             CreatedAt = DateTime.Now,
@@ -29,6 +29,8 @@ public static class SaleTestData
                 GenerateSaleItem(10, 50)  // 20% discount
             ]
         };
+        sale.CalculateTotal();
+        return sale;
     }
 
     /// <summary>

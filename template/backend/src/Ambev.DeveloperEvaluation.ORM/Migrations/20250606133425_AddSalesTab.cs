@@ -53,10 +53,10 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     SaleNumber = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
                     CustomerName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    Branch = table.Column<string>(type: "text", nullable: true),
+                    Branch = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     TotalAmount = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false, defaultValue: 0m),
                     IsCancelled = table.Column<bool>(type: "boolean", nullable: false)
                 },
@@ -77,7 +77,8 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false, defaultValue: 0m),
                     Discount = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false, defaultValue: 0m),
-                    Total = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false, defaultValue: 0m)
+                    Total = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false, defaultValue: 0m),
+                    IsCancelled = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {

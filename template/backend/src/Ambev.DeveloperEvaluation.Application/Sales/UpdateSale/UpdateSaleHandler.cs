@@ -24,9 +24,8 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var existingSale = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
-        if (existingSale is null)
-            throw new KeyNotFoundException($"Venda com ID {command.Id} não encontrada.");
+        var existingSale = await _saleRepository.GetByIdAsync(command.Id, true, cancellationToken)
+            ?? throw new KeyNotFoundException($"Venda com ID {command.Id} não encontrada.");
 
         var updatedSale = _mapper.Map(command, existingSale);
 
