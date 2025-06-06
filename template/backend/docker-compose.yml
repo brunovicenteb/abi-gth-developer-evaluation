@@ -21,7 +21,6 @@ services:
   ambev.developerevaluation.database:
     container_name: ambev_developer_evaluation_database
     image: postgres:13
-
     environment:
       POSTGRES_DB: developer_evaluation
       POSTGRES_USER: developer
@@ -29,6 +28,11 @@ services:
     ports:
       - "5432"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "developer", "-d", "developer_evaluation"]
+      interval: 10s
+      timeout: 5s
+      retries: 5    
 
   ambev.developerevaluation.nosql:
     container_name: ambev_developer_evaluation_nosql 
