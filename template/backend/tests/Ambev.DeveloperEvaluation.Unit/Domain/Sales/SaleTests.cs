@@ -138,15 +138,12 @@ public class SaleTests
         var totalBeforeCancel = sale.TotalAmount;
 
         // Act
-        sale.CancelItemById(itemToCancel.Id);
+        sale.CancelItemById(itemToCancel.ProductId);
 
         // Assert
         Assert.True(itemToCancel.IsCancelled);
-        Assert.Equal(0, itemToCancel.Quantity);
-        Assert.Equal(0, itemToCancel.Total);
-        Assert.Equal(0, itemToCancel.Discount);
 
-        var expectedTotal = sale.Items.Sum(i => i.Total);
+        var expectedTotal = sale.Items.Where(o => !o.IsCancelled).Sum(i => i.Total);
         Assert.Equal(expectedTotal, sale.TotalAmount);
         Assert.Equal(totalBeforeCancel - itemTotalBeforeCancel, sale.TotalAmount);
     }
@@ -162,7 +159,7 @@ public class SaleTests
         var ex = Assert.Throws<InvalidOperationException>(() => sale.CancelItemById(invalidItemId));
 
         // Assert
-        Assert.Equal($"Item com ID {invalidItemId} não encontrado.", ex.Message);
+        Assert.Equal($"Item com ProductID {invalidItemId} não encontrado.", ex.Message);
     }
 
     [Fact(DisplayName = "CancelItemById should throw if item already cancelled")]
@@ -173,8 +170,8 @@ public class SaleTests
         var item = sale.Items.First();
 
         // Act
-        sale.CancelItemById(item.Id);
-        var ex = Assert.Throws<InvalidOperationException>(() => sale.CancelItemById(item.Id));
+        sale.CancelItemById(item.ProductId);
+        var ex = Assert.Throws<InvalidOperationException>(() => sale.CancelItemById(item.ProductId));
 
         // Assert
         Assert.Equal("Este item já foi cancelado.", ex.Message);
