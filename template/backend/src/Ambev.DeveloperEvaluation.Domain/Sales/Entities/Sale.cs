@@ -20,13 +20,15 @@ public class Sale : BaseEntity
     public bool IsCancelled { get; private set; }
     public List<SaleItem> Items { get; set; } = [];
 
-    public void CancelItemById(Guid productId)
+    public SaleItem CancelItemById(Guid productId)
     {
         var item = Items.FirstOrDefault(i => i.ProductId == productId)
             ?? throw new InvalidOperationException($"Item com ProductID {productId} não encontrado.");
 
         item.Cancel();
         CalculateTotal();
+
+        return item;
     }
 
     public void CalculateTotal()

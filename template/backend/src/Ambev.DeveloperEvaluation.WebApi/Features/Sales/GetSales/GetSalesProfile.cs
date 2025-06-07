@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Ambev.DeveloperEvaluation.Application.Sales.GetSales;
+using Ambev.DeveloperEvaluation.Application.Sales.Queries.GetSales;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSales;
 
