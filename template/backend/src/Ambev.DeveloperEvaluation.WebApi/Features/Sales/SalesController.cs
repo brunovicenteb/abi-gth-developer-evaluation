@@ -18,7 +18,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
 /// <summary>
-/// Controller for managing sale operations.
+/// Controller responsible for managing operations related to sales,
+/// including creation, updates, cancellations, and retrieval.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -28,8 +29,10 @@ public class SalesController : BaseController
     private readonly IMapper _mapper;
 
     /// <summary>
-    /// Initializes a new instance of SalesController.
+    /// Initializes a new instance of the <see cref="SalesController"/>.
     /// </summary>
+    /// <param name="mediator">The MediatR handler for command/query dispatching.</param>
+    /// <param name="mapper">The AutoMapper instance for DTO conversion.</param>
     public SalesController(IMediator mediator, IMapper mapper)
     {
         _mediator = mediator;
@@ -39,9 +42,9 @@ public class SalesController : BaseController
     /// <summary>
     /// Creates a new sale.
     /// </summary>
-    /// <param name="request">The sale creation request</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The created sale details</returns>
+    /// <param name="request">Request payload containing sale data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Details of the created sale.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -67,9 +70,9 @@ public class SalesController : BaseController
     /// <summary>
     /// Cancels a sale by its unique identifier.
     /// </summary>
-    /// <param name="id">Unique identifier of the sale</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Success status</returns>
+    /// <param name="id">The sale's unique identifier.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Confirmation of cancellation.</returns>
     [HttpPut("{id}/cancel")]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -96,10 +99,10 @@ public class SalesController : BaseController
     /// <summary>
     /// Updates an existing sale.
     /// </summary>
-    /// <param name="id">Sale ID</param>
-    /// <param name="request">Sale update request</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The updated sale information</returns>
+    /// <param name="id">The sale's unique identifier.</param>
+    /// <param name="request">The updated sale data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Details of the updated sale.</returns>
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(ApiResponseWithData<UpdateSaleResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -131,11 +134,11 @@ public class SalesController : BaseController
     }
 
     /// <summary>
-    /// Retrieves a sale by ID.
+    /// Retrieves a specific sale by its unique identifier.
     /// </summary>
-    /// <param name="id">Unique identifier of the sale</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>The sale information if found</returns>
+    /// <param name="id">The sale's unique identifier.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The full sale information.</returns>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ApiResponseWithData<GetSaleResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -163,10 +166,10 @@ public class SalesController : BaseController
     /// <summary>
     /// Cancels a specific item from a sale.
     /// </summary>
-    /// <param name="saleId">The sale's unique identifier</param>
-    /// <param name="productId">The product item's unique identifier</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Success status</returns>
+    /// <param name="saleId">The unique identifier of the sale.</param>
+    /// <param name="productId">The unique identifier of the item (product) to cancel.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Confirmation of item cancellation.</returns>
     [HttpPut("{saleId}/items/{productId}/cancel")]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -191,11 +194,19 @@ public class SalesController : BaseController
     }
 
     /// <summary>
-    /// Retrieves a paginated list of sales with optional filtering and ordering.
+    /// Retrieves a paginated list of sales, supporting filtering and ordering through query parameters.
     /// </summary>
-    /// <param name="request">Query parameters for filtering, ordering and paging</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Paginated sales result</returns>
+    /// <param name="request">
+    /// Query parameters:
+    /// <list type="bullet">
+    /// <item><description><c>field=value</c> - Filters by exact match</description></item>
+    /// <item><description><c>field=*value</c> - Applies a "contains" filter</description></item>
+    /// <item><description><c>_order=field</c> or <c>_order=-field</c> - Sorts ascending or descending</description></item>
+    /// <item><description><c>_page=N</c>, <c>_size=M</c> - Enables pagination</description></item>
+    /// </list>
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Paginated sales data.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponseWithData<List<GetSalesResponse>>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
