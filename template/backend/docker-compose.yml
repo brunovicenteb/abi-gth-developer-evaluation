@@ -1,3 +1,5 @@
+version: '2.1'
+
 services:
   ambev.developerevaluation.webapi:
     container_name: ambev_developer_evaluation_webapi
@@ -6,7 +8,8 @@ services:
       context: .
       dockerfile: src/Ambev.DeveloperEvaluation.WebApi/Dockerfile
     depends_on:
-      - ambev.developerevaluation.database
+      ambev.developerevaluation.database:
+        condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
