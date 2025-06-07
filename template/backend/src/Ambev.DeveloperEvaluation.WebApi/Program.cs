@@ -76,6 +76,7 @@ public class Program
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred while starting the application: '{ex.Message}'.");
             Log.Fatal(ex, "Application terminated unexpectedly");
         }
         finally
