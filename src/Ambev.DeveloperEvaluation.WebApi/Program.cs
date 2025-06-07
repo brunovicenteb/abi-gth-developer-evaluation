@@ -14,7 +14,7 @@ namespace Ambev.DeveloperEvaluation.WebApi;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         try
         {
@@ -29,6 +29,7 @@ public class Program
             builder.AddBasicHealthChecks();
             builder.Services.AddSwaggerGen();
 
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<DefaultContext>(options =>
                 options.UseNpgsql(
                     builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -61,6 +62,8 @@ public class Program
                 app.UseSwaggerUI();
             }
 
+            await DefaultContext.MigrateAsync(app);
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
@@ -70,7 +73,7 @@ public class Program
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
         catch (Exception ex)
         {
