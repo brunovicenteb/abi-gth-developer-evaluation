@@ -16,6 +16,12 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      
 
   ambev.developerevaluation.database:
     container_name: ambev_developer_evaluation_database
@@ -29,9 +35,9 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "developer", "-d", "developer_evaluation"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 5    
+      retries: 5
 
   ambev.developerevaluation.nosql:
     container_name: ambev_developer_evaluation_nosql 
