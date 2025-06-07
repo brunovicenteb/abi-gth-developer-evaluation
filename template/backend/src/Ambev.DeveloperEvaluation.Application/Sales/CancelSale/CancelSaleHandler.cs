@@ -5,7 +5,7 @@ using MediatR;
 namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 
 /// <summary>
-/// Handler for deleting a sale.
+/// Handler for cancel a sale.
 /// </summary>
 public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleResponse>
 {

@@ -1,5 +1,4 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
-using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 using Microsoft.EntityFrameworkCore;
 

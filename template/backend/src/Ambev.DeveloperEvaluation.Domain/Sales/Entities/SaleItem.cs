@@ -41,6 +41,7 @@ public class SaleItem : BaseEntity
     internal void CalculateTotal()
     {
         ApplyDiscount();
-        Total = Quantity * UnitPrice * (1 - Discount);
+        var total = Quantity * UnitPrice * (1 - Discount);
+        Total = DefaultRound(total);
     }
 }

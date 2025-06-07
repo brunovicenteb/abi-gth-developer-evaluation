@@ -1,5 +1,7 @@
-﻿using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
+using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
 using AutoMapper;
+using FluentValidation;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.GetSales
@@ -17,6 +19,12 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.GetSales
 
         public async Task<GetSalesResult> Handle(GetSalesQuery query, CancellationToken cancellationToken)
         {
+            var validator = new GetSalesQueryValidator();
+            var validationResult = await validator.ValidateAsync(query, cancellationToken);
+
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);
+
             var (items, total) = await _saleRepository.GetPagedAsync(query.Page, query.Size,
                 query.OrderBy, query.Filters, cancellationToken);
 

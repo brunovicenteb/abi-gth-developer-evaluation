@@ -5,6 +5,11 @@ USER app
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
+USER root
+RUN apt-get update -y && \
+    apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
+USER app
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
@@ -25,6 +30,8 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./Ambev.DeveloperEvaluation.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+LABEL maintainer 'Senior Architect <Bruno Belchior at brunovicenteb@gmail.com>'
+ENV TZ="America/Sao_Paulo"
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Ambev.DeveloperEvaluation.WebApi.dll"]
