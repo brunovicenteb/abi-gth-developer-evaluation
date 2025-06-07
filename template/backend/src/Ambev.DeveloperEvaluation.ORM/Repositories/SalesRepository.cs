@@ -6,9 +6,13 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 
 public class SalesRepository : BaseRepository<DefaultContext, Sale>, ISaleRepository
 {
+    private const string DEFAULT_ORDER_BY = "-CreatedAt";
+
     public SalesRepository(DefaultContext context) : base(context)
     {
     }
+
+    protected override string GetDefaultOrderBySearch() => DEFAULT_ORDER_BY;
 
     protected override DbSet<Sale> Collection => Context.Sales;
 
