@@ -16,9 +16,5 @@ public class GetSalesQueryValidator : AbstractValidator<GetSalesQuery>
         RuleFor(x => x.Size)
             .InclusiveBetween(1, 100)
             .WithMessage("O tamanho da página deve estar entre 1 e 100.");
-
-        RuleFor(x => x.OrderBy)
-            .NotEmpty()
-            .WithMessage("O campo de ordenação é obrigatório.");
     }
 }

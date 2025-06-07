@@ -1,6 +1,7 @@
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq.Dynamic.Core;
 
@@ -18,6 +19,8 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
     protected TContext Context { get; }
 
     protected abstract DbSet<TEntity> Collection { get; }
+
+    protected abstract string GetDefaultOrderBySearch();
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken, bool applySave = true)
     {
@@ -94,10 +97,9 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         return (items, total);
     }
 
-    private static IQueryable<TEntity> ApplyOrderBy(string orderBy, IQueryable<TEntity> query)
+    private  IQueryable<TEntity> ApplyOrderBy(string orderBy, IQueryable<TEntity> query)
     {
-        if (string.IsNullOrEmpty(orderBy))
-            return query;
+        orderBy = orderBy?.Trim() ?? GetDefaultOrderBySearch();
 
         var isDescending = orderBy.StartsWith("-");
         var property = isDescending ? orderBy.Substring(1) : orderBy;
