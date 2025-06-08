@@ -14,6 +14,7 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -23,7 +24,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class SalesController : BaseController
+public class SalesController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
@@ -58,13 +59,9 @@ public class SalesController : BaseController
 
         var command = _mapper.Map<CreateSaleCommand>(request);
         var result = await _mediator.Send(command, cancellationToken);
+        var reloadedData = _mapper.Map<CreateSaleResponse>(result);
 
-        return Created(string.Empty, new ApiResponseWithData<CreateSaleResponse>
-        {
-            Success = true,
-            Message = "Venda criada com sucesso",
-            Data = _mapper.Map<CreateSaleResponse>(result)
-        });
+        return Created(string.Empty, reloadedData);
     }
 
     /// <summary>
@@ -87,13 +84,9 @@ public class SalesController : BaseController
             return BadRequest(validationResult.Errors);
 
         var command = new CancelSaleCommand(id);
-        var result = await _mediator.Send(command, cancellationToken);
+        await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponse
-        {
-            Success = result.Success,
-            Message = "Venda cancelada com sucesso"
-        });
+        return NoContent();
     }
 
     /// <summary>
@@ -124,13 +117,9 @@ public class SalesController : BaseController
 
         var command = _mapper.Map<UpdateSaleCommand>(request);
         var result = await _mediator.Send(command, cancellationToken);
+        var data = _mapper.Map<UpdateSaleResponse>(result);
 
-        return Ok(new ApiResponseWithData<UpdateSaleResponse>
-        {
-            Success = true,
-            Message = "Venda atualizada com sucesso",
-            Data = _mapper.Map<UpdateSaleResponse>(result)
-        });
+        return Ok(data);
     }
 
     /// <summary>
@@ -154,13 +143,9 @@ public class SalesController : BaseController
 
         var query = new GetSaleQuery(id);
         var result = await _mediator.Send(query, cancellationToken);
+        var reloadedSale = _mapper.Map<GetSaleResponse>(result);
 
-        return Ok(new ApiResponseWithData<GetSaleResponse>
-        {
-            Success = true,
-            Message = "Venda recuperada com sucesso",
-            Data = _mapper.Map<GetSaleResponse>(result)
-        });
+        return Ok(reloadedSale);
     }
 
     /// <summary>
@@ -184,13 +169,9 @@ public class SalesController : BaseController
             return BadRequest(validationResult.Errors);
 
         var command = new CancelSaleItemCommand(saleId, productId);
-        var result = await _mediator.Send(command, cancellationToken);
+        await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponse
-        {
-            Success = result.Success,
-            Message = "Item da venda cancelado com sucesso"
-        });
+        return NoContent();
     }
 
     /// <summary>
@@ -208,7 +189,7 @@ public class SalesController : BaseController
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Paginated sales data.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponseWithData<List<GetSalesResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedList<GetSalesResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetSales([FromQuery] GetSalesRequest request, CancellationToken cancellationToken)
     {
@@ -224,8 +205,14 @@ public class SalesController : BaseController
         var result = await _mediator.Send(query, cancellationToken);
 
         var data = _mapper.Map<List<GetSalesResponse>>(result.Data);
-        var list = new PaginatedList<GetSalesResponse>(data, result.Total, result.Page, result.Size);
+        var response = new PaginatedResponse<GetSalesResponse>()
+        {
+            CurrentPage = result.Page,
+            TotalCount = result.Total,
+            TotalPages = (int)Math.Ceiling(result.Total / (double)result.Size),
+            Data = data
+        };
 
-        return OkPaginated(list);
+        return Ok(response);
     }
 }
