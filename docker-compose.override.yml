@@ -1,0 +1,4 @@
+services:
+  ambev.developerevaluation.webapi:
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=ambev_developer_evaluation_database;Port=5432;Database=developer_evaluation;Username=developer;Password=ev@luAt10n;Include Error Detail=True;

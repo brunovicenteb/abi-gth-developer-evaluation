@@ -1,86 +1,108 @@
-# Developer Evaluation Project
+# 🛠️ Developer Evaluation Project - Sales API
 
-`READ CAREFULLY`
+API RESTful desenvolvida em .NET 8 seguindo os princípios de DDD e Clean Architecture. Esta aplicação realiza o gerenciamento de vendas, incluindo criação, atualização, cancelamento, e consulta com filtros dinâmicos, ordenação e paginação.
 
-## Instructions
-**The test below will have up to 7 calendar days to be delivered from the date of receipt of this manual.**
+---
 
-- The code must be versioned in a public Github repository and a link must be sent for evaluation once completed
-- Upload this template to your repository and start working from it
-- Read the instructions carefully and make sure all requirements are being addressed
-- The repository must provide instructions on how to configure, execute and test the project
-- Documentation and overall organization will also be taken into consideration
+## ✅ Requisitos Atendidos
 
-## Use Case
-**You are a developer on the DeveloperStore team. Now we need to implement the API prototypes.**
+- [x] API CRUD para vendas (incluindo cancelamento)
+- [x] Aplicação de regras de desconto por quantidade
+- [x] Filtros dinâmicos por query string
+- [x] Paginação e ordenação múltipla via `_page`, `_size`, `_order`
+- [x] Publicação de eventos: `SaleCreated`, `SaleCancelled`, `SaleItemCancelled`, `SaleUpdated`
+- [x] Testes unitários com xUnit, Bogus e NSubstitute
+- [x] Estrutura modularizada (Domain, Application, ORM, WebApi)
+- [x] Configuração de filas independentes com Rebus In-Memory
 
-As we work with `DDD`, to reference entities from other domains, we use the `External Identities` pattern with denormalization of entity descriptions.
+---
 
-Therefore, you will write an API (complete CRUD) that handles sales records. The API needs to be able to inform:
+## 🚀 Como executar o projeto
 
-* Sale number
-* Date when the sale was made
-* Customer
-* Total sale amount
-* Branch where the sale was made
-* Products
-* Quantities
-* Unit prices
-* Discounts
-* Total amount for each item
-* Cancelled/Not Cancelled
+### Pré-requisitos
 
-It's not mandatory, but it would be a differential to build code for publishing events of:
-* SaleCreated
-* SaleModified
-* SaleCancelled
-* ItemCancelled
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download)
+- [Docker](https://www.docker.com/) (opcional, para execução via container)
 
-If you write the code, **it's not required** to actually publish to any Message Broker. You can log a message in the application log or however you find most convenient.
+### 🔧 Build e execução local
 
-### Business Rules
+```bash
+# Rodar a aplicação
+docker compose up
+```
 
-* Purchases above 4 identical items have a 10% discount
-* Purchases between 10 and 20 identical items have a 20% discount
-* It's not possible to sell above 20 identical items
-* Purchases below 4 items cannot have a discount
+A API estará disponível em: `http://localhost:8081/swagger`
 
-These business rules define quantity-based discounting tiers and limitations:
+---
 
-1. Discount Tiers:
-   - 4+ items: 10% discount
-   - 10-20 items: 20% discount
+## 🧪 Executando os testes
 
-2. Restrictions:
-   - Maximum limit: 20 items per product
-   - No discounts allowed for quantities below 4 items
+```bash
+# Executar os testes unitários
+dotnet test Ambev.DeveloperEvaluation.sln
+```
 
-## Overview
-This section provides a high-level overview of the project and the various skills and competencies it aims to assess for developer candidates. 
+- Os testes seguem o padrão AAA
+- Fakes com `Bogus`
+- Mocks com `NSubstitute`
 
-See [Overview](/.doc/overview.md)
+---
 
-## Tech Stack
-This section lists the key technologies used in the project, including the backend, testing, frontend, and database components. 
+## 📚 Endpoints principais
 
-See [Tech Stack](/.doc/tech-stack.md)
+### Vendas
 
-## Frameworks
-This section outlines the frameworks and libraries that are leveraged in the project to enhance development productivity and maintainability. 
+- `POST /api/sales` - Criar venda
+- `GET /api/sales?_page=1&_size=10&_order="total desc, createdAt"&branch=*Paulista&_minTotal=200` - Consultar com filtros, paginação e ordenação
+- `PUT /api/sales/{id}` - Atualizar venda
+- `PATCH /api/sales/{id}/cancel` - Cancelar venda
+- `PATCH /api/sales/{saleId}/items/{productId}/cancel` - Cancelar item
 
-See [Frameworks](/.doc/frameworks.md)
+### Autenticação
+- `POST /auth/login`
 
-<!-- 
-## API Structure
-This section includes links to the detailed documentation for the different API resources:
-- [API General](./docs/general-api.md)
-- [Products API](/.doc/products-api.md)
-- [Carts API](/.doc/carts-api.md)
-- [Users API](/.doc/users-api.md)
-- [Auth API](/.doc/auth-api.md)
--->
+---
 
-## Project Structure
-This section describes the overall structure and organization of the project files and directories. 
+## 📦 Estrutura de Diretórios
 
-See [Project Structure](/.doc/project-structure.md)
+```
+root
+├── src/
+│   ├── Ambev.DeveloperEvaluation.Domain
+│   ├── Ambev.DeveloperEvaluation.Application
+│   ├── Ambev.DeveloperEvaluation.ORM
+│   └── Ambev.DeveloperEvaluation.WebApi
+├── tests/
+│   └── Ambev.DeveloperEvaluation.Tests
+├── docker-compose.yml
+└── README.md
+```
+
+---
+
+## 📨 Eventos com Rebus
+
+- `SaleCreatedEvent` → `sale-created-queue`
+- `SaleCancelledEvent` → `sale-cancelled-queue`
+- `SaleItemCancelledEvent` → `sale-item-cancelled-queue`
+- `SaleUpdatedEvent` → `sale-updated-queue`
+
+---
+
+## 🧰 Tech Stack
+
+- .NET 8 + C# 12
+- PostgreSQL (EF Core)
+- MediatR (CQRS)
+- FluentValidation
+- AutoMapper
+- Rebus (In-Memory transport)
+- xUnit + NSubstitute + Bogus
+- Docker + Docker Compose
+- Swagger para documentação
+
+---
+
+## 📄 Licença
+
+Este projeto é apenas para fins de avaliação técnica e não possui licença comercial.
