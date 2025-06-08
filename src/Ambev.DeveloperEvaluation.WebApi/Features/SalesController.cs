@@ -9,6 +9,7 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSaleItem;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSales;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
 using MediatR;
@@ -190,5 +191,41 @@ public class SalesController : BaseController
             Success = result.Success,
             Message = "Item da venda cancelado com sucesso"
         });
+    }
+
+    /// <summary>
+    /// Retrieves a paginated list of sales, supporting filtering and ordering through query parameters.
+    /// </summary>
+    /// <param name="request">
+    /// Query parameters:
+    /// <list type="bullet">
+    /// <item><description><c>field=value</c> - Filters by exact match</description></item>
+    /// <item><description><c>field=*value</c> - Applies a "contains" filter</description></item>
+    /// <item><description><c>_order=field</c> or <c>_order=-field</c> - Sorts ascending or descending</description></item>
+    /// <item><description><c>_page=N</c>, <c>_size=M</c> - Enables pagination</description></item>
+    /// </list>
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Paginated sales data.</returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(ApiResponseWithData<List<GetSalesResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetSales([FromQuery] GetSalesRequest request, CancellationToken cancellationToken)
+    {
+        var validator = new GetSalesRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
+        request.PrepareFilters(HttpContext);
+
+        var query = _mapper.Map<GetSalesQuery>(request);
+        var result = await _mediator.Send(query, cancellationToken);
+
+        var data = _mapper.Map<List<GetSalesResponse>>(result.Data);
+        var list = new PaginatedList<GetSalesResponse>(data, result.Total, result.Page, result.Size);
+
+        return OkPaginated(list);
     }
 }
