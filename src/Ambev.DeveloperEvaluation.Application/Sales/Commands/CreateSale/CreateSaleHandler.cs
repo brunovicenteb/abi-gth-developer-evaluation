@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
+﻿using Ambev.DeveloperEvaluation.Domain.Common.Messaging;
+using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 using Ambev.DeveloperEvaluation.Domain.Sales.Events;
 using AutoMapper;
@@ -14,13 +15,13 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
-    private readonly IMediator _mediator;
+    private readonly IMessageBus _bus;
 
-    public CreateSaleHandler(ISaleRepository saleRepository, IMapper mapper, IMediator mediator)
+    public CreateSaleHandler(ISaleRepository saleRepository, IMapper mapper, IMessageBus bus)
     {
         _saleRepository = saleRepository;
         _mapper = mapper;
-        _mediator = mediator;
+        _bus = bus;
     }
 
     public async Task<CreateSaleResult> Handle(CreateSaleCommand command, CancellationToken cancellationToken)
@@ -37,7 +38,7 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 
         await _saleRepository.AddAsync(sale, cancellationToken);
 
-        await _mediator.Publish(new SaleCreatedEvent(sale), cancellationToken);
+        await _bus.PublishAsync(new SaleCreatedEvent(sale), cancellationToken);
 
         return _mapper.Map<CreateSaleResult>(sale);
     }

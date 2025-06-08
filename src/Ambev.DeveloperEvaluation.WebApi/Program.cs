@@ -77,6 +77,8 @@ public class Program
 
             app.MapControllers();
 
+            await app.UseDependenciesAsync();
+
             await app.RunAsync();
         }
         catch (Exception ex)

@@ -11,4 +11,9 @@ public static class DependencyResolver
         new InfrastructureModuleInitializer().Initialize(builder);
         new WebApiModuleInitializer().Initialize(builder);
     }
+
+    public static async Task UseDependenciesAsync(this WebApplication application)
+    {
+        await InfrastructureModuleInitializer.UseDependenciesAsync(application);
+    }
 }
