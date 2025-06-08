@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
+﻿using Ambev.DeveloperEvaluation.Domain.Common.Messaging;
+using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Sales.Events;
 using FluentValidation;
 using MediatR;
@@ -11,12 +12,12 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.Commands.CancelSale;
 public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleResponse>
 {
     private readonly ISaleRepository _saleRepository;
-    private readonly IMediator _mediator;
+    private readonly IMessageBus _bus;
 
-    public CancelSaleHandler(ISaleRepository saleRepository, IMediator mediator)
+    public CancelSaleHandler(ISaleRepository saleRepository, IMessageBus bus)
     {
         _saleRepository = saleRepository;
-        _mediator = mediator;
+        _bus = bus;
     }
 
     public async Task<CancelSaleResponse> Handle(CancelSaleCommand request, CancellationToken cancellationToken)
@@ -34,7 +35,7 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
 
         await _saleRepository.UpdateAsync(sale, cancellationToken);
 
-        await _mediator.Publish(new SaleCancelledEvent(sale), cancellationToken);
+        await _bus.PublishAsync(new SaleCancelledEvent(sale), cancellationToken);
 
         return new CancelSaleResponse(true);
     }

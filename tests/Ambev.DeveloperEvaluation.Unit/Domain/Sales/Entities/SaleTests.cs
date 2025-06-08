@@ -1,8 +1,8 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
-using Ambev.DeveloperEvaluation.Unit.Domain.Sales.TestData;
+using Ambev.DeveloperEvaluation.Unit.Domain.Sales.Entities.TestData;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Domain.Sales;
+namespace Ambev.DeveloperEvaluation.Unit.Domain.Sales.Entities;
 
 /// <summary>
 /// Contains comprehensive unit tests for the Sale and SaleItem entities,

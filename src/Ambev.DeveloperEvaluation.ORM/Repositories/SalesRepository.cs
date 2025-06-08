@@ -1,18 +1,19 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
+using Ambev.DeveloperEvaluation.Domain.Sales.Filtering;
+using Ambev.DeveloperEvaluation.ORM.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 
 public class SalesRepository : BaseRepository<DefaultContext, Sale>, ISaleRepository
 {
-    private const string DEFAULT_ORDER_BY = "-CreatedAt";
-
-    public SalesRepository(DefaultContext context) : base(context)
+    public SalesRepository(DefaultContext context, ISalesQueryParser queryParser)
+        : base(context, queryParser)
     {
     }
 
-    protected override string GetDefaultOrderBySearch() => DEFAULT_ORDER_BY;
+    protected override QueryParser<Sale> CreateParser() => new SalesQueryParser();
 
     protected override DbSet<Sale> Collection => Context.Sales;
 
