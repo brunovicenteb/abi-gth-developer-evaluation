@@ -79,11 +79,20 @@ public abstract class QueryParser<T> : IQueryParser<T>
         if (propInfo != null)
         {
             var member = Expression.Property(parameter, propInfo);
-            var constant = Expression.Constant(Convert.ChangeType(value, propInfo.PropertyType));
+            var constant = Expression.Constant(ChangeType(value, propInfo.PropertyType));
             return Expression.Equal(member, constant);
         }
 
         return null;
+    }
+
+    private static object ChangeType(string value, Type targetType)
+    {
+        if (targetType == typeof(Guid))
+            return Guid.Parse(value);
+        if (targetType.IsEnum)
+            return Enum.Parse(targetType, value, ignoreCase: true);
+        return Convert.ChangeType(value, targetType);
     }
 
     public virtual IOrderedQueryable<T> ApplyOrdering(IQueryable<T> query, string orderBy)
