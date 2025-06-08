@@ -1,10 +1,10 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.Commands.UpdateSale;
+using Ambev.DeveloperEvaluation.Domain.Common.Messaging;
 using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 using Ambev.DeveloperEvaluation.Unit.Application.Sales.Commands.UpdateSale.TestData;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
@@ -15,12 +15,12 @@ public class UpdateSaleHandlerTests
 {
     private readonly ISaleRepository _repository = Substitute.For<ISaleRepository>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
-    private readonly IMediator _mediator = Substitute.For<IMediator>();
+    private readonly IMessageBus _bus = Substitute.For<IMessageBus>();
     private readonly UpdateSaleHandler _handler;
 
     public UpdateSaleHandlerTests()
     {
-        _handler = new UpdateSaleHandler(_repository, _mapper, _mediator);
+        _handler = new UpdateSaleHandler(_repository, _mapper, _bus);
     }
 
     [Theory(DisplayName = "Should return result when update command is valid")]

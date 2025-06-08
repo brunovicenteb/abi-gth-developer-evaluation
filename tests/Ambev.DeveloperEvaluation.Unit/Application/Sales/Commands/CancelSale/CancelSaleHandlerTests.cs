@@ -1,10 +1,10 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.Commands.CancelSale;
+using Ambev.DeveloperEvaluation.Domain.Common.Messaging;
 using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 using Ambev.DeveloperEvaluation.Unit.Application.Sales.Commands.CancelSale.TestData;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
@@ -16,11 +16,11 @@ public class CancelSaleHandlerTests
     private readonly ISaleRepository _repository = Substitute.For<ISaleRepository>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly CancelSaleHandler _handler;
-    private readonly IMediator _mediator = Substitute.For<IMediator>();
+    private readonly IMessageBus _bus = Substitute.For<IMessageBus>();
 
     public CancelSaleHandlerTests()
     {
-        _handler = new CancelSaleHandler(_repository, _mediator);
+        _handler = new CancelSaleHandler(_repository, _bus);
     }
 
     [Fact(DisplayName = "Should return result when cancel command is valid")]
