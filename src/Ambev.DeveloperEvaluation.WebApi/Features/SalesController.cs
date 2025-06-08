@@ -1,6 +1,8 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.Commands.CreateSale;
+using Ambev.DeveloperEvaluation.Application.Sales.Commands.UpdateSale;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +56,43 @@ public class SalesController : BaseController
             Success = true,
             Message = "Venda criada com sucesso",
             Data = _mapper.Map<CreateSaleResponse>(result)
+        });
+    }
+
+    /// <summary>
+    /// Updates an existing sale.
+    /// </summary>
+    /// <param name="id">The sale's unique identifier.</param>
+    /// <param name="request">The updated sale data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Details of the updated sale.</returns>
+    [HttpPut("{id}")]
+    [ProducesResponseType(typeof(ApiResponseWithData<UpdateSaleResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateSale(Guid id, [FromBody] UpdateSaleRequest request, CancellationToken cancellationToken)
+    {
+        if (id != request.Id)
+            return BadRequest(new ApiResponse
+            {
+                Success = false,
+                Message = "ID do parâmetro da rota difere do corpo da requisição"
+            });
+
+        var validator = new UpdateSaleRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
+        var command = _mapper.Map<UpdateSaleCommand>(request);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponseWithData<UpdateSaleResponse>
+        {
+            Success = true,
+            Message = "Venda atualizada com sucesso",
+            Data = _mapper.Map<UpdateSaleResponse>(result)
         });
     }
 }
