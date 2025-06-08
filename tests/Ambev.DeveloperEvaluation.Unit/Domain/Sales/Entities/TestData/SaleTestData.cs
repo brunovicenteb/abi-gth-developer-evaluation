@@ -1,7 +1,7 @@
 using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 using Bogus;
 
-namespace Ambev.DeveloperEvaluation.Unit.Domain.Sales.TestData;
+namespace Ambev.DeveloperEvaluation.Unit.Domain.Sales.Entities.TestData;
 
 /// <summary>
 /// Provides test data generators for Sale and SaleItem using the Bogus library.
