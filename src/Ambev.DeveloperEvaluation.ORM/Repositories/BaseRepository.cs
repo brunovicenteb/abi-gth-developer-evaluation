@@ -1,5 +1,7 @@
 using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Common.Filtering;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.ORM.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 
@@ -9,16 +11,17 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
     where TContext : DbContext
     where TEntity : BaseEntity
 {
-    protected BaseRepository(TContext context)
+    private readonly IQueryParser<TEntity> _queryParser;
+
+    protected BaseRepository(TContext context, IQueryParser<TEntity> queryParser)
     {
         Context = context;
+        _queryParser = queryParser;
     }
 
     protected TContext Context { get; }
 
     protected abstract DbSet<TEntity> Collection { get; }
-
-    protected abstract string GetDefaultOrderBySearch();
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken, bool applySave = true)
     {
@@ -76,52 +79,23 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         return Collection.AsQueryable();
     }
 
-    public async Task<(IEnumerable<TEntity> Items, int Total)> GetPagedAsync(int page, int size, string orderBy, Dictionary<string, string> filters, CancellationToken cancellationToken)
+    protected abstract QueryParser<TEntity> CreateParser();
+
+    public async Task<(IEnumerable<TEntity> Items, int Total)> GetPagedAsync(int page, int size, string orderBy,
+        Dictionary<string, string> filters, CancellationToken cancellationToken)
     {
         var query = GetQueryableCollection();
 
-        query = ApplyFilters(filters, query);
-        query = ApplyOrderBy(orderBy, query);
+        var predicate = _queryParser.BuildPredicate(filters);
+        var filtered = query.Where(predicate);
+        var ordered = _queryParser.ApplyOrdering(filtered, orderBy);
 
-        var total = await query.CountAsync(cancellationToken);
-        var skip = (page - 1) * size;
-
-        var items = await query
-            .Skip(skip)
+        var total = await ordered.CountAsync(cancellationToken);
+        var result = await ordered
+            .Skip((page - 1) * size)
             .Take(size)
-            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return (items, total);
-    }
-
-    private  IQueryable<TEntity> ApplyOrderBy(string orderBy, IQueryable<TEntity> query)
-    {
-        orderBy = orderBy?.Trim() ?? GetDefaultOrderBySearch();
-
-        var isDescending = orderBy.StartsWith("-");
-        var property = isDescending ? orderBy.Substring(1) : orderBy;
-        var direction = isDescending ? "descending" : "ascending";
-        query = query.OrderBy($"{property} {direction}");
-        return query;
-    }
-
-    private static IQueryable<TEntity> ApplyFilters(Dictionary<string, string> filters, IQueryable<TEntity> query)
-    {
-        if (filters is null || filters.Count == 0)
-            return query;
-
-        foreach (var filter in filters)
-        {
-            var value = filter.Value;
-            if (!value.StartsWith("*"))
-                query = query.Where($"{filter.Key} == @0", value);
-            else
-            {
-                var trimmed = value.TrimStart('*');
-                query = query.Where($"{filter.Key}.ToLower().Contains(@0)", trimmed.ToLower());
-            }
-        }
-        return query;
+        return (result, total);
     }
 }
