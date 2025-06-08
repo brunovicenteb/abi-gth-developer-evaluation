@@ -1,6 +1,11 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.Commands.CreateSale;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.Commands.CancelSale;
+using Ambev.DeveloperEvaluation.Application.Sales.Commands.CancelSaleItem;
+using Ambev.DeveloperEvaluation.Application.Sales.Commands.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.Commands.UpdateSale;
+using Ambev.DeveloperEvaluation.Application.Sales.Queries.GetSale;
+using Ambev.DeveloperEvaluation.Application.Sales.Queries.GetSales;
 using Ambev.DeveloperEvaluation.WebApi.Common;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
@@ -56,6 +61,35 @@ public class SalesController : BaseController
             Success = true,
             Message = "Venda criada com sucesso",
             Data = _mapper.Map<CreateSaleResponse>(result)
+        });
+    }
+
+    /// <summary>
+    /// Cancels a sale by its unique identifier.
+    /// </summary>
+    /// <param name="id">The sale's unique identifier.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Confirmation of cancellation.</returns>
+    [HttpPut("{id}/cancel")]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelSale([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var request = new CancelSaleRequest(id);
+        var validator = new CancelSaleRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
+        var command = new CancelSaleCommand(id);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponse
+        {
+            Success = result.Success,
+            Message = "Venda cancelada com sucesso"
         });
     }
 
