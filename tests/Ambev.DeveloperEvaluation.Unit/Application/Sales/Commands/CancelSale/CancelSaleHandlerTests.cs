@@ -16,10 +16,11 @@ public class CancelSaleHandlerTests
     private readonly ISaleRepository _repository = Substitute.For<ISaleRepository>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly CancelSaleHandler _handler;
+    private readonly IMediator _mediator = Substitute.For<IMediator>();
 
     public CancelSaleHandlerTests()
     {
-        _handler = new CancelSaleHandler(_repository);
+        _handler = new CancelSaleHandler(_repository, _mediator);
     }
 
     [Fact(DisplayName = "Should return result when cancel command is valid")]

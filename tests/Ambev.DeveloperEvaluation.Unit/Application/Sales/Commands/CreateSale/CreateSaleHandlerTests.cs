@@ -4,6 +4,7 @@ using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 using Ambev.DeveloperEvaluation.Unit.Application.Sales.Commands.CreateSale.TestData;
 using AutoMapper;
 using FluentValidation;
+using MediatR;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
@@ -14,11 +15,12 @@ public class CreateSaleHandlerTests
 {
     private readonly ISaleRepository _repository = Substitute.For<ISaleRepository>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
+    private readonly IMediator _mediator = Substitute.For<IMediator>();
     private readonly CreateSaleHandler _handler;
 
     public CreateSaleHandlerTests()
     {
-        _handler = new CreateSaleHandler(_repository, _mapper);
+        _handler = new CreateSaleHandler(_repository, _mapper, _mediator);
     }
 
     [Theory(DisplayName = "Should return result when command is valid")]

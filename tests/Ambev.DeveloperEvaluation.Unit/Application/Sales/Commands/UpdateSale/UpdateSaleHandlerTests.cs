@@ -15,11 +15,12 @@ public class UpdateSaleHandlerTests
 {
     private readonly ISaleRepository _repository = Substitute.For<ISaleRepository>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
+    private readonly IMediator _mediator = Substitute.For<IMediator>();
     private readonly UpdateSaleHandler _handler;
 
     public UpdateSaleHandlerTests()
     {
-        _handler = new UpdateSaleHandler(_repository, _mapper);
+        _handler = new UpdateSaleHandler(_repository, _mapper, _mediator);
     }
 
     [Theory(DisplayName = "Should return result when update command is valid")]
