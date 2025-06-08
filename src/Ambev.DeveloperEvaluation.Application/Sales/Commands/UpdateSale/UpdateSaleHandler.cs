@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.customers.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Sales.Events;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
@@ -9,11 +10,13 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
 
-    public UpdateSaleHandler(ISaleRepository saleRepository, IMapper mapper)
+    public UpdateSaleHandler(ISaleRepository saleRepository, IMapper mapper, IMediator mediator)
     {
         _saleRepository = saleRepository;
         _mapper = mapper;
+        _mediator = mediator;
     }
 
     public async Task<UpdateSaleResult> Handle(UpdateSaleCommand command, CancellationToken cancellationToken)
@@ -32,6 +35,8 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
         updatedSale.CalculateTotal();
 
         await _saleRepository.UpdateAsync(updatedSale, cancellationToken);
+
+        await _mediator.Publish(new SaleUpdatedEvent(updatedSale), cancellationToken);
 
         return _mapper.Map<UpdateSaleResult>(updatedSale);
     }

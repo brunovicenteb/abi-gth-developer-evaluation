@@ -4,6 +4,7 @@ using Ambev.DeveloperEvaluation.Domain.Sales.Entities;
 using Ambev.DeveloperEvaluation.Unit.Application.Sales.Commands.CancelSaleItem.TestData;
 using AutoMapper;
 using FluentValidation;
+using MediatR;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
@@ -14,11 +15,12 @@ public class CancelSaleItemHandlerTests
 {
     private readonly ISaleRepository _repository = Substitute.For<ISaleRepository>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
+    private readonly IMediator _mediator = Substitute.For<IMediator>();
     private readonly CancelSaleItemHandler _handler;
 
     public CancelSaleItemHandlerTests()
     {
-        _handler = new CancelSaleItemHandler(_repository);
+        _handler = new CancelSaleItemHandler(_repository, _mediator);
     }
 
     [Fact(DisplayName = "Should return result when cancel item command is valid")]
