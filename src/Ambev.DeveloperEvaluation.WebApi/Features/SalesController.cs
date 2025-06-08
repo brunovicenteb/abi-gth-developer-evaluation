@@ -2,10 +2,13 @@
 using Ambev.DeveloperEvaluation.Application.Sales.Commands.CancelSaleItem;
 using Ambev.DeveloperEvaluation.Application.Sales.Commands.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.Commands.UpdateSale;
+using Ambev.DeveloperEvaluation.Application.Sales.Queries.GetSale;
+using Ambev.DeveloperEvaluation.Application.Sales.Queries.GetSales;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSaleItem;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
 using MediatR;
@@ -126,6 +129,36 @@ public class SalesController : BaseController
             Success = true,
             Message = "Venda atualizada com sucesso",
             Data = _mapper.Map<UpdateSaleResponse>(result)
+        });
+    }
+
+    /// <summary>
+    /// Retrieves a specific sale by its unique identifier.
+    /// </summary>
+    /// <param name="id">The sale's unique identifier.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The full sale information.</returns>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ApiResponseWithData<GetSaleResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetSale(Guid id, CancellationToken cancellationToken)
+    {
+        var request = new GetSaleRequest { Id = id };
+        var validator = new GetSaleRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
+        var query = new GetSaleQuery(id);
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return Ok(new ApiResponseWithData<GetSaleResponse>
+        {
+            Success = true,
+            Message = "Venda recuperada com sucesso",
+            Data = _mapper.Map<GetSaleResponse>(result)
         });
     }
 
