@@ -58,9 +58,6 @@ dotnet test Ambev.DeveloperEvaluation.sln
 - `PATCH /api/sales/{id}/cancel` - Cancelar venda
 - `PATCH /api/sales/{saleId}/items/{productId}/cancel` - Cancelar item
 
-### Autenticação
-- `POST /auth/login`
-
 ---
 
 ## 📦 Estrutura de Diretórios
